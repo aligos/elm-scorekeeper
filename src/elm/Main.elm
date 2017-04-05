@@ -1,59 +1,51 @@
 import Html exposing (..)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Random
+
 
 main =
-  Html.beginnerProgram { model = model, view = view, update = update }
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
+
 
 -- MODEL
 type alias Model = 
-  { userName : String
-  , password : String
-  , passwordAgain : String
+  { dieFace : Int
   }
 
-model : Model
-model =
-  Model "" "" ""
+init : (Model, Cmd Msg)
+init = 
+  (Model 1, Cmd.none)
 
--- UPDATE-
-type Msg
-  = UserName String
-  | Password String
-  | PasswordAgain String
 
-  
-update : Msg -> Model -> Model
+--UPDATE
+type Msg 
+  = Roll
+  | NewFace Int
+
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    UserName userName ->
-      { model | userName = userName }
-    Password password ->
-      { model | password = password }
-    PasswordAgain password ->
-      { model | passwordAgain = password }
+    Roll ->
+      (model, Random.generate NewFace (Random.int 1 6))
+    NewFace newFace ->
+      (Model newFace, Cmd.none)
 
 
--- VIEW-
+-- SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+
+--VIEW
 view : Model -> Html Msg
 view model =
-  div [ class "mw7 mw6-ns center bg-light-gray pa3 ph6-ns" ]
-    [ input [ class "w-100", type_ "text", placeholder "Username", onInput UserName ] []
-    , input [ class "w-100", type_ "password", placeholder "Password", onInput Password ] []
-    , input [ class "w-100", type_ "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
-    , viewValidation model
+  div []
+    [ h1 [] [ text (toString model.dieFace) ]
+    , button [ onClick Roll ] [ text "Roll" ]
     ]
-
-
-viewValidation : Model -> Html msg
-viewValidation model =
-  let
-    (color, message) =
-      if model.password == model.passwordAgain && model.password /= "" && model.passwordAgain /= "" then
-        ("green", "OK")
-      else if model.password == "" || model.passwordAgain == "" then
-        ("orange", "Password is Empty")
-      else
-        ("red", "Password do not match!")
-  in
-    div [ class "tc", style [("color", color)] ] [ text message ]

@@ -233,10 +233,6 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-bootstrap-sass@^3.3.6:
-  version "3.3.7"
-  resolved "https://registry.yarnpkg.com/bootstrap-sass/-/bootstrap-sass-3.3.7.tgz#6596c7ab40f6637393323ab0bc80d064fc630498"
-
 brace-expansion@^1.0.0:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.6.tgz#7197d7eaa9b87e648390ea61fc66c84427420df9"
@@ -3043,6 +3039,16 @@ svgo@^0.7.0:
     mkdirp "~0.5.1"
     sax "~1.2.1"
     whet.extend "~0.9.9"
+
+tachyons-sass@^4.7.1:
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/tachyons-sass/-/tachyons-sass-4.7.1.tgz#b039eaf8c633189a32f546e8e28a764cb3ee4cfb"
+  dependencies:
+    tachyons "^4.6.1"
+
+tachyons@^4.6.1:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/tachyons/-/tachyons-4.7.0.tgz#228eed0badca01cf793ef7cc6103a60c8f8b0f3e"
 
 tapable@^0.1.8, tapable@~0.1.8:
   version "0.1.10"

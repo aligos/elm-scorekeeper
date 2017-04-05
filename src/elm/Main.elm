@@ -1,51 +1,73 @@
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Random
+import Http
+import Json.Decode as Decode
 
 
 main =
   Html.program
-    { init = init
+    { init = init "cats"
     , view = view
     , update = update
     , subscriptions = subscriptions
     }
 
 
--- MODEL
-type alias Model = 
-  { dieFace : Int
+--MODEL
+type alias Model =
+  { topic : String
+  , gifUrl : String
   }
 
-init : (Model, Cmd Msg)
-init = 
-  (Model 1, Cmd.none)
+init : String -> (Model, Cmd Msg)
+init topic =
+  ( Model topic "waiting.gif"
+  , getRandomGif topic
+  )
 
 
 --UPDATE
-type Msg 
-  = Roll
-  | NewFace Int
+type Msg
+  = MorePlease
+  | NewGif (Result Http.Error String)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Roll ->
-      (model, Random.generate NewFace (Random.int 1 6))
-    NewFace newFace ->
-      (Model newFace, Cmd.none)
-
-
--- SUBSCRIPTIONS
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
+    MorePlease ->
+      (model, getRandomGif model.topic)
+    NewGif (Ok newUrl) ->
+      (Model model.topic newUrl, Cmd.none)
+    NewGif (Err _) ->
+      (model, Cmd.none)
 
 
 --VIEW
 view : Model -> Html Msg
 view model =
-  div []
-    [ h1 [] [ text (toString model.dieFace) ]
-    , button [ onClick Roll ] [ text "Roll" ]
+  div [ class "mw7 mw6-ns center bg-light-gray pa3 ph6-ns" ]
+    [ h2 [] [ text model.topic ]
+    , button [ onClick MorePlease ] [ text "More Please!" ]
+    , br [] []
+    , img [ src model.gifUrl ] []
     ]
+
+
+--SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+getRandomGif : String -> Cmd Msg
+getRandomGif topic = 
+  let
+    url = 
+      "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
+  in
+    Http.send NewGif (Http.get url decodeGifUrl)
+
+decodeGifUrl : Decode.Decoder String
+decodeGifUrl =
+  Decode.at ["data", "image_url"] Decode.string
+

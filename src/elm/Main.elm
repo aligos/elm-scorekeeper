@@ -1,34 +1,33 @@
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onInput)
 import Html.Attributes exposing (..)
 
--- APP
 main =
   Html.beginnerProgram { model = model, view = view, update = update }
 
--- MODEL-
-type alias Model = Int
+-- MODEL
+type alias Model = 
+  { content : String 
+  }
 
 model : Model
 model =
-  0
+  { content = "" }
 
 -- UPDATE-
-type Msg = Increment | Decrement
-
+type Msg = 
+  Change String
+  
+update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
-
-    Decrement ->
-      model - 1
+    Change newContent ->
+      { model | content = newContent }
 
 -- VIEW-
 view : Model -> Html Msg
 view model =
   div [ class "dib dtc-ns v-mid w-100 tl tr-ns mt2 mt0-ns" ]
-    [ button [ class "b--black-20 bg-white black br2", onClick Decrement ] [ text "-" ]
-    , span [ class "ph1-ns" ] [ text (toString model) ]
-    , button [ class "b--black-20 bg-white black br2", onClick Increment ] [text "+" ]
+    [ input [ placeholder "Text to reverse", onInput Change ] []
+    , span [ class "ph1-ns" ] [ text (String.reverse model.content) ]
     ]

@@ -7,27 +7,53 @@ main =
 
 -- MODEL
 type alias Model = 
-  { content : String 
+  { userName : String
+  , password : String
+  , passwordAgain : String
   }
 
 model : Model
 model =
-  { content = "" }
+  Model "" "" ""
 
 -- UPDATE-
-type Msg = 
-  Change String
+type Msg
+  = UserName String
+  | Password String
+  | PasswordAgain String
+
   
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Change newContent ->
-      { model | content = newContent }
+    UserName userName ->
+      { model | userName = userName }
+    Password password ->
+      { model | password = password }
+    PasswordAgain password ->
+      { model | passwordAgain = password }
+
 
 -- VIEW-
 view : Model -> Html Msg
 view model =
-  div [ class "dib dtc-ns v-mid w-100 tl tr-ns mt2 mt0-ns" ]
-    [ input [ placeholder "Text to reverse", onInput Change ] []
-    , span [ class "ph1-ns" ] [ text (String.reverse model.content) ]
+  div [ class "mw7 mw6-ns center bg-light-gray pa3 ph6-ns" ]
+    [ input [ class "w-100", type_ "text", placeholder "Username", onInput UserName ] []
+    , input [ class "w-100", type_ "password", placeholder "Password", onInput Password ] []
+    , input [ class "w-100", type_ "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
+    , viewValidation model
     ]
+
+
+viewValidation : Model -> Html msg
+viewValidation model =
+  let
+    (color, message) =
+      if model.password == model.passwordAgain && model.password /= "" && model.passwordAgain /= "" then
+        ("green", "OK")
+      else if model.password == "" || model.passwordAgain == "" then
+        ("orange", "Password is Empty")
+      else
+        ("red", "Password do not match!")
+  in
+    div [ class "tc", style [("color", color)] ] [ text message ]

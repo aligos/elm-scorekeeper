@@ -4,7 +4,14 @@ import Html.Attributes exposing (..)
 
 -- APP
 main =
-  Html.beginnerProgram { model = 0, view = view, update = update }
+  Html.beginnerProgram { model = model, view = view, update = update }
+
+-- MODEL-
+type alias Model = Int
+
+model : Model
+model =
+  0
 
 -- UPDATE-
 type Msg = Increment | Decrement
@@ -18,7 +25,7 @@ update msg model =
       model - 1
 
 -- VIEW-
-view : a -> Html Msg
+view : Model -> Html Msg
 view model =
   div [ class "dib dtc-ns v-mid w-100 tl tr-ns mt2 mt0-ns" ]
     [ button [ class "b--black-20 bg-white black br2", onClick Decrement ] [ text "-" ]

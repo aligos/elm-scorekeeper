@@ -1,73 +1,58 @@
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
-import Json.Decode as Decode
-
+import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+import Time exposing (Time, second)
 
 main =
   Html.program
-    { init = init "cats"
+    { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
     }
 
 
---MODEL
-type alias Model =
-  { topic : String
-  , gifUrl : String
-  }
-
-init : String -> (Model, Cmd Msg)
-init topic =
-  ( Model topic "waiting.gif"
-  , getRandomGif topic
-  )
+-- MODEL
+type alias Model = Time
 
 
---UPDATE
+init : (Model, Cmd Msg)
+init =
+  (0, Cmd.none)
+
+
+-- UPDATE
 type Msg
-  = MorePlease
-  | NewGif (Result Http.Error String)
+  = Tick Time
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    MorePlease ->
-      (model, getRandomGif model.topic)
-    NewGif (Ok newUrl) ->
-      (Model model.topic newUrl, Cmd.none)
-    NewGif (Err _) ->
-      (model, Cmd.none)
+    Tick newTime ->
+      (newTime, Cmd.none)
 
 
---VIEW
-view : Model -> Html Msg
-view model =
-  div [ class "mw7 mw6-ns center bg-light-gray pa3 ph6-ns" ]
-    [ h2 [] [ text model.topic ]
-    , button [ onClick MorePlease ] [ text "More Please!" ]
-    , br [] []
-    , img [ src model.gifUrl ] []
-    ]
-
-
---SUBSCRIPTIONS
+-- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Time.every second Tick
 
-getRandomGif : String -> Cmd Msg
-getRandomGif topic = 
+
+-- VIEW
+view : Model -> Html Msg
+view model =
   let
-    url = 
-      "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
+    angle =
+      turns (Time.inMinutes model)
+
+    handX =
+      toString (50 + 40 * cos angle)
+
+    handY =
+      toString (50 + 40 * sin angle)
   in
-    Http.send NewGif (Http.get url decodeGifUrl)
-
-decodeGifUrl : Decode.Decoder String
-decodeGifUrl =
-  Decode.at ["data", "image_url"] Decode.string
-
+    svg [ viewBox "0 0 100 100", width "300px" ]
+      [ circle [ cx "50", cy "50", r "45", fill "#0B79CE" ] []
+      , line [ x1 "50", y1 "50", x2 handX, y2 handY, stroke "#023963" ] []
+      ]

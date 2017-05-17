@@ -1,63 +1,100 @@
+module Main exposing (..)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import WebSocket
 
 
-main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
+-- model
+
+
+type alias Model =
+    { players : List Player
+    , name : String
+    , playerId : Maybe Int
+    , plays : List Play
     }
 
 
--- MODEL
-type alias Model =
-  { input : String
-  , messages : List String
-  }
-
-init : (Model, Cmd Msg)
-init =
-  (Model "" [], Cmd.none)
+type alias Player =
+    { id : Int
+    , name : String
+    , points : Int
+    }
 
 
--- UPDATE
+type alias Play =
+    { id : Int
+    , playerId : Int
+    , name : String
+    , points : Int
+    }
+
+
+initModel : Model
+initModel =
+    { players = []
+    , name = ""
+    , playerId = Nothing
+    , plays = []
+    }
+
+
+
+-- update
+
+
 type Msg
-  = Input String
-  | Send
-  | NewMessage String
-
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg {input, messages} = 
-  case msg of
-    Input newInput ->
-      (Model newInput messages, Cmd.none)
-
-    Send ->
-      (Model "" messages, WebSocket.send "ws://echo.websocket.org" input)
-
-    NewMessage str ->
-      (Model input (str :: messages), Cmd.none)
+    = Edit Player
+    | Score Player Int
+    | Input String
+    | Save
+    | Cancel
+    | DeletePlay Play
 
 
--- SUBSCRIPTIONS
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  WebSocket.listen "ws://echo.websocket.org" NewMessage
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Input name ->
+            { model | name = name }
+
+        _ ->
+            model
 
 
--- VIEW
+
+-- view
+
+
 view : Model -> Html Msg
 view model =
-  div [class "mw7 mw6-ns center bg-light-gray pa3 ph6-ns"]
-    [ div [] (List.map viewMessage model.messages)
-    , input [onInput Input] []
-    , button [onClick Send] [text "Send"]
-    ]
+    div [ class "scoreboard" ]
+        [ h1 [] [ text "Score Keeper" ]
+        , playerForm model
+        , p [] [ text (toString model) ]
+        ]
 
-viewMessage : String -> Html msg
-viewMessage msg =
-  div [] [text msg]
+
+playerForm : Model -> Html Msg
+playerForm model =
+    Html.form [ onSubmit Save ]
+        [ input
+            [ type_ "text"
+            , placeholder "Add/Edit Player"
+            , onInput Input
+            , value model.name
+            ]
+            []
+        , button [ type_ "submit" ] [ text "Save" ]
+        , button [ type_ "button", onClick Cancel ] [ text "Cancle" ]
+        ]
+
+
+main : Program Never Model Msg
+main =
+    Html.beginnerProgram
+        { model = initModel
+        , view = view
+        , update = update
+        }

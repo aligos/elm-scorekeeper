@@ -69,8 +69,9 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "scoreboard" ]
-        [ h1 [] [ text "Score Keeper" ]
+    div [ class "mw5 mw6-ns center pt4" ]
+        [ header [ class "tc pv2 pv2-ns" ]
+            [ h1 [] [ text "Score Keeper" ] ]
         , playerForm model
         , p [] [ text (toString model) ]
         ]
@@ -78,16 +79,17 @@ view model =
 
 playerForm : Model -> Html Msg
 playerForm model =
-    Html.form [ onSubmit Save ]
+    Html.form [ class "pa4 black-80", onSubmit Save ]
         [ input
             [ type_ "text"
+            , class "input-reset ba b--black-20 pa2 mb2 db w-100"
             , placeholder "Add/Edit Player"
             , onInput Input
             , value model.name
             ]
             []
-        , button [ type_ "submit" ] [ text "Save" ]
-        , button [ type_ "button", onClick Cancel ] [ text "Cancle" ]
+        , button [ type_ "submit", class "btn-default mr2 f6 link dim br2 ph3 pv2 mb2 dib white bg-dark-blue" ] [ text "Save" ]
+        , button [ type_ "button", class "btn-default mr2 f6 link dim br2 ph3 pv2 mb2 dib white bg-dark-green", onClick Cancel ] [ text "Cancle" ]
         ]
 
 

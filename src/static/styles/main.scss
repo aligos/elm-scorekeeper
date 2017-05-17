@@ -1,3 +1,9 @@
-@import '~tachyons-sass/tachyons.scss'
+@import '~tachyons-sass/tachyons.scss';
 
 // can add Boostrap overrides, additional Sass/CSS below...
+.btn-default {
+  border-color: transparent;
+  &:hover {
+    cursor: pointer;
+  }
+}

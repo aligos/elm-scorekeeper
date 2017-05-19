@@ -3,7 +3,8 @@
 // can add Boostrap overrides, additional Sass/CSS below...
 .btn-default {
   border-color: transparent;
-  &:hover {
-    cursor: pointer;
-  }
+}
+
+.btn-thin {
+	border-color: #555;
 }
